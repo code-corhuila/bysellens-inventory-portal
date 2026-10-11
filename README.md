@@ -10,6 +10,23 @@ Arranque, login, sesión y navegación reutilizados de `@bysellens/frontend-core
 La pantalla tras iniciar sesión es un aviso temporal, no la pantalla comercial final.
 HU/tarea oficial: pendiente de identificar.
 
+## Servicios y MOCK
+
+`src/services/productoService.ts`, `mock.ts` y `dominio.test.ts` se trasladan
+sin cambios desde `apps/inventory/src/services/` del frontend original.
+Permiten listar, consultar, crear, editar y desactivar productos, con imagen opcional.
+Se conservan las validaciones originales de precios y código único y el borrado lógico.
+Tipos `Producto`/`ProductoRequest`, semilla sintética y persistencia MOCK se reutilizan
+de `frontend-core@1.0.0`, sin duplicar el paquete ni datos de otros dominios.
+
+Los tipos heredados incluyen `stock`/`stockMinimo` y el adaptador valida `stock`;
+se conserva ese contrato por compatibilidad. No hay operaciones específicas
+para ajustar existencias: esa responsabilidad pertenece a Product Portal.
+La edición conserva las cantidades cuando se envían sin cambios; el adaptador
+original no impide modificarlas en el payload. Esta limitación heredada permanece.
+Las pruebas cubren operaciones comerciales, persistencia, errores e imágenes
+sin backend; el contrato multipart REAL se prueba con el transporte simulado.
+
 ## Desarrollo y verificación
 
 Node.js 22 y npm. Desde este repositorio:
@@ -49,10 +66,12 @@ al build. El certificado se monta temporalmente y no se guarda en la imagen.
 
 ## Siguientes PR
 
-1. Servicios, modelos, adaptadores MOCK y pruebas de Inventario.
-2. Pantalla, búsqueda, formulario, validaciones y estilos originales.
+1. Pantalla, búsqueda, formulario, validaciones y estilos originales.
    Se ajustará la división funcional al límite de 400 líneas por PR,
    excluyendo pruebas y archivos generados; no se recortarán funcionalidades.
 
-Cada rama parte de `origin/develop` después de fusionarse el PR anterior.
+El PR #1 ya se fusionó en `develop`. El PR #2 se fusionó en la rama temporal
+`feat/inventory-bootstrap-core`; sus servicios se recuperan en
+`feat/inventory-mock-services`, creada desde `origin/develop`, mediante un PR
+directo a `develop` cuyo diff no repite el bootstrap.
 Los PR se dejan abiertos para revisión, sin commits directos a `develop`, `qa` o `main`.
