@@ -15,6 +15,10 @@ cantidades, estado e imagen. El formulario bloquea sus acciones mientras guarda.
 El mismo formulario permite registrar productos comerciales, con stock inicial 0,
 stock mínimo 5 y activo true (valores originales, sin controles de existencias).
 Muestra confirmación de éxito y actualiza el listado; rechaza códigos duplicados en MOCK.
+El formulario permite seleccionar/reemplazar JPG, PNG o WEBP de hasta 5 MB y muestra
+vista previa con texto alternativo. MOCK persiste la imagen como data URL usando
+el servicio original; sin reemplazo conserva la anterior. No hay almacenamiento externo.
+Si la imagen no carga, muestra un aviso. Cancelar no guarda la selección.
 HU/tarea oficial: pendiente de identificar.
 
 ## Servicios y MOCK
@@ -73,7 +77,7 @@ al build. El certificado se monta temporalmente y no se guarda en la imagen.
 
 ## Siguientes PR
 
-1. Gestión de imágenes y estilos restantes del formulario original.
+1. Estilos restantes del formulario original y revisión completa en navegador antes de QA.
    Se ajustará la división funcional al límite de 400 líneas por PR,
    contando también pruebas y documentación; se dividirá en bloques funcionales.
 
