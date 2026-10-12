@@ -23,8 +23,9 @@ beforeEach(() => {
 });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
-it('monta el punto de arranque de Inventario', () => {
+it('monta el punto de arranque de Inventario', async () => {
   render(<Inventario />);
+  await screen.findByText('Labial rosa');
   expect(screen.getByRole('heading', { name: 'Inventario' })).toBeTruthy();
 });
 
