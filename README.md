@@ -7,7 +7,7 @@ Documentación oficial: https://github.com/code-corhuila/bysellens-docs.
 ## Primer incremento
 
 Arranque, login, sesión y navegación reutilizados de `@bysellens/frontend-core@1.0.0`.
-La pantalla tras iniciar sesión es un aviso temporal, no la pantalla comercial final.
+La pantalla ya consulta el catálogo comercial y permite buscar y actualizar el listado.
 HU/tarea oficial: pendiente de identificar.
 
 ## Servicios y MOCK
@@ -66,7 +66,7 @@ al build. El certificado se monta temporalmente y no se guarda en la imagen.
 
 ## Siguientes PR
 
-1. Pantalla, búsqueda, formulario, validaciones y estilos originales.
+1. Formulario, creación/edición/desactivación, validaciones y estilos restantes.
    Se ajustará la división funcional al límite de 400 líneas por PR,
    excluyendo pruebas y archivos generados; no se recortarán funcionalidades.
 
