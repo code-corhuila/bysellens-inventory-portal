@@ -1,21 +1,24 @@
 import { useState } from 'react';
 import { isAxiosError } from 'axios';
-import { actualizarProducto, type Producto, type ProductoRequest } from '../services/productoService';
+import { actualizarProducto, crearProducto, type Producto, type ProductoRequest } from '../services/productoService';
 import './EditarProducto.css';
 
 interface Props {
-  producto: Producto;
+  producto?: Producto;
   alGuardar: (producto: Producto) => void;
   alCerrar: () => void;
 }
 
 // Bloque comercial del formulario original; conserva cantidades y estado recibidos.
 const EditarProducto: React.FC<Props> = ({ producto, alGuardar, alCerrar }) => {
-  const [formulario, setFormulario] = useState<ProductoRequest>({
+  const [formulario, setFormulario] = useState<ProductoRequest>(producto ? {
     codigo: producto.codigo, nombre: producto.nombre, descripcion: producto.descripcion || '',
     categoria: producto.categoria || '', tono: producto.tono || '',
     precioCompra: producto.precioCompra, precioVenta: producto.precioVenta,
     stock: producto.stock, stockMinimo: producto.stockMinimo, activo: producto.activo,
+  } : {
+    codigo: '', nombre: '', descripcion: '', categoria: '', tono: '',
+    precioCompra: 0, precioVenta: 0, stock: 0, stockMinimo: 5, activo: true,
   });
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState('');
@@ -35,11 +38,17 @@ const EditarProducto: React.FC<Props> = ({ producto, alGuardar, alCerrar }) => {
     if (error) return;
     setGuardando(true);
     try {
-      const actualizado = await actualizarProducto(producto.id, formulario, null);
+      const actualizado = producto
+        ? await actualizarProducto(producto.id, formulario, null)
+        : await crearProducto(formulario, null);
       alGuardar(actualizado);
     } catch (error: unknown) {
-      const detalle = isAxiosError<{ message?: string }>(error) ? error.response?.data?.message : undefined;
-      setMensaje(detalle || 'No fue posible guardar el producto.');
+      const datos = isAxiosError<{ message?: string; mensaje?: string }>(error) ? error.response?.data
+        : error && typeof error === 'object' && 'response' in error
+          ? (error as { response?: { data?: { message?: unknown; mensaje?: unknown } } }).response?.data
+          : undefined;
+      const detalle = datos?.message || datos?.mensaje;
+      setMensaje(typeof detalle === 'string' && detalle ? detalle : 'No fue posible guardar el producto.');
     } finally {
       setGuardando(false);
     }
@@ -47,10 +56,10 @@ const EditarProducto: React.FC<Props> = ({ producto, alGuardar, alCerrar }) => {
 
   return <>
     <div className="inventario-drawer-overlay" />
-    <aside className="inventario-drawer" aria-label="Editar producto">
+    <aside className="inventario-drawer" aria-label={producto ? 'Editar producto' : 'Nuevo producto'}>
       <form className="product-form" noValidate onSubmit={(event) => { event.preventDefault(); void guardarProducto(); }}>
-        <h2>Editar producto</h2>
-        <p>Modifica la información del producto.</p>
+        <h2>{producto ? 'Editar producto' : 'Nuevo producto'}</h2>
+        <p>{producto ? 'Modifica la información del producto.' : 'Registra un nuevo producto en el inventario.'}</p>
         <fieldset disabled={guardando}>
           <div className="form-grid">
             {(['codigo', 'nombre', 'tono'] as const).map((campo) => (
@@ -63,7 +72,7 @@ const EditarProducto: React.FC<Props> = ({ producto, alGuardar, alCerrar }) => {
               <label htmlFor="categoria">Categoría *</label>
               <select id="categoria" value={formulario.categoria} onChange={(event) => cambiarCampo('categoria', event.target.value)}>
                 <option value="">Seleccionar categoría</option>
-                {[...new Set([producto.categoria, 'Maquillaje', 'Perfumería', 'Cuidado facial', 'Cuidado corporal', 'Accesorios'])].filter(Boolean).map((categoria) => (
+                {[...new Set([producto?.categoria, 'Maquillaje', 'Perfumería', 'Cuidado facial', 'Cuidado corporal', 'Accesorios'])].filter(Boolean).map((categoria) => (
                   <option key={categoria} value={categoria}>{categoria}</option>
                 ))}
               </select>
@@ -84,7 +93,7 @@ const EditarProducto: React.FC<Props> = ({ producto, alGuardar, alCerrar }) => {
         {guardando && <p role="status">Guardando producto...</p>}
         <div className="form-actions">
           <button type="button" className="secondary-button" disabled={guardando} onClick={alCerrar}>Cancelar</button>
-          <button type="submit" className="primary-button" disabled={guardando}>Guardar cambios</button>
+          <button type="submit" className="primary-button" disabled={guardando}>{producto ? 'Guardar cambios' : 'Crear producto'}</button>
         </div>
       </form>
     </aside>

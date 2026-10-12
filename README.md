@@ -12,6 +12,9 @@ También permite eliminar con confirmación: desactiva el producto sin borrarlo 
 Conserva los errores originales y bloquea acciones mientras se procesa la eliminación.
 Permite editar los campos comerciales con validaciones originales, conservando
 cantidades, estado e imagen. El formulario bloquea sus acciones mientras guarda.
+El mismo formulario permite registrar productos comerciales, con stock inicial 0,
+stock mínimo 5 y activo true (valores originales, sin controles de existencias).
+Muestra confirmación de éxito y actualiza el listado; rechaza códigos duplicados en MOCK.
 HU/tarea oficial: pendiente de identificar.
 
 ## Servicios y MOCK
@@ -70,7 +73,7 @@ al build. El certificado se monta temporalmente y no se guarda en la imagen.
 
 ## Siguientes PR
 
-1. Creación de productos, gestión de imágenes y estilos restantes del formulario.
+1. Gestión de imágenes y estilos restantes del formulario original.
    Se ajustará la división funcional al límite de 400 líneas por PR,
    contando también pruebas y documentación; se dividirá en bloques funcionales.
 
