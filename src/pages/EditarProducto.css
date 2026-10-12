@@ -182,3 +182,22 @@
     transform: translateX(0);
   }
 }
+.inventario-drawer .inventario-image-preview {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  box-sizing: border-box;
+}
+.inventario-drawer .inventario-image-preview img {
+  display: block;
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  border-radius: 14px;
+  border: 1px solid #ead6df;
+  background: #ffffff;
+  box-shadow:
+    0 6px 18px rgba(70, 40, 55, 0.08);
+}
