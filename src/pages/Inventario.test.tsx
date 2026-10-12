@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { configurarFrontend } from '@bysellens/frontend-core/configuracion';
 import * as servicio from '../services/productoService';
 import Inventario from './Inventario';
@@ -47,4 +47,55 @@ it('muestra el estado vacío cuando el catálogo no tiene productos activos', as
   render(<Inventario />);
   expect(await screen.findByText('No se encontraron productos')).toBeTruthy();
   expect(screen.getByText('0 productos registrados')).toBeTruthy();
+});
+
+it('cancela la eliminación sin llamar al servicio ni cambiar la tabla', async () => {
+  const confirmar = vi.spyOn(window, 'confirm').mockReturnValue(false);
+  const eliminar = vi.spyOn(servicio, 'eliminarProducto');
+  render(<Inventario />);
+  fireEvent.click(await screen.findByRole('button', { name: 'Eliminar Labial rosa' }));
+  expect(confirmar).toHaveBeenCalledWith('¿Deseas eliminar "Labial rosa"?');
+  expect(eliminar).not.toHaveBeenCalled();
+  expect(screen.getByText('Labial rosa')).toBeTruthy();
+});
+
+it('desactiva en MOCK, actualiza el contador y conserva el borrado tras recargar', async () => {
+  vi.spyOn(window, 'confirm').mockReturnValue(true);
+  render(<Inventario />);
+  fireEvent.click(await screen.findByRole('button', { name: 'Eliminar Labial rosa' }));
+  expect(await screen.findByText('0 productos registrados')).toBeTruthy();
+  expect(screen.queryByText('Labial rosa')).toBeNull();
+  expect((await servicio.obtenerProductoPorId(1)).activo).toBe(false);
+  fireEvent.click(screen.getByRole('button', { name: 'Actualizar' }));
+  expect(await screen.findByText('No se encontraron productos')).toBeTruthy();
+});
+
+it.each([undefined, 'Producto vinculado'])('conserva la fila al fallar y muestra el mensaje: %s', async (mensaje) => {
+  vi.spyOn(window, 'confirm').mockReturnValue(true);
+  const alertar = vi.spyOn(window, 'alert').mockImplementation(() => {});
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  vi.spyOn(servicio, 'eliminarProducto').mockRejectedValueOnce(
+    mensaje ? { isAxiosError: true, response: { data: { message: mensaje } } } : new Error('Fallo'),
+  );
+  render(<Inventario />);
+  fireEvent.click(await screen.findByRole('button', { name: 'Eliminar Labial rosa' }));
+  await waitFor(() => expect(alertar).toHaveBeenCalledWith(mensaje || 'No fue posible eliminar el producto.'));
+  expect(screen.getByText('Labial rosa')).toBeTruthy();
+  expect((screen.getByRole('button', { name: 'Eliminar Labial rosa' }) as HTMLButtonElement).disabled).toBe(false);
+});
+
+it('bloquea acciones repetidas y Actualizar durante una eliminación pendiente', async () => {
+  vi.spyOn(window, 'confirm').mockReturnValue(true);
+  let terminar!: () => void;
+  const eliminar = vi.spyOn(servicio, 'eliminarProducto').mockImplementation(() => new Promise<void>((resolve) => { terminar = resolve; }));
+  render(<Inventario />);
+  const boton = await screen.findByRole('button', { name: 'Eliminar Labial rosa' });
+  fireEvent.click(boton);
+  expect(screen.getByRole('status').textContent).toBe('Eliminando producto...');
+  expect((boton as HTMLButtonElement).disabled).toBe(true);
+  expect((screen.getByRole('button', { name: 'Actualizar' }) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(boton);
+  expect(eliminar).toHaveBeenCalledTimes(1);
+  terminar();
+  expect(await screen.findByText('0 productos registrados')).toBeTruthy();
 });
