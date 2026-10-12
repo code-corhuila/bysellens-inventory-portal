@@ -8,6 +8,8 @@ Documentación oficial: https://github.com/code-corhuila/bysellens-docs.
 
 Arranque, login, sesión y navegación reutilizados de `@bysellens/frontend-core@1.0.0`.
 La pantalla ya consulta el catálogo comercial y permite buscar y actualizar el listado.
+También permite eliminar con confirmación: desactiva el producto sin borrarlo físicamente.
+Conserva los errores originales y bloquea acciones mientras se procesa la eliminación.
 HU/tarea oficial: pendiente de identificar.
 
 ## Servicios y MOCK
@@ -66,9 +68,9 @@ al build. El certificado se monta temporalmente y no se guarda en la imagen.
 
 ## Siguientes PR
 
-1. Formulario, creación/edición/desactivación, validaciones y estilos restantes.
+1. Formulario, creación/edición, imágenes, validaciones y estilos restantes.
    Se ajustará la división funcional al límite de 400 líneas por PR,
-   excluyendo pruebas y archivos generados; no se recortarán funcionalidades.
+   contando también pruebas y documentación; se dividirá en bloques funcionales.
 
 El segundo incremento incorpora los servicios mediante una rama nueva desde
 `origin/develop`, con un PR directo a `develop` tras la fusión del PR #1.

@@ -1,14 +1,16 @@
 import { IonContent, IonPage } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
-import { obtenerProductos, type Producto } from '../services/productoService';
+import { eliminarProducto, obtenerProductos, type Producto } from '../services/productoService';
+import { isAxiosError } from 'axios';
 import './Inventario.css';
 
-// Bloque de consulta extraído de la pantalla original; las acciones van en otro PR.
+// Consulta y desactivación extraídas de la pantalla original.
 const Inventario: React.FC = () => {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
   const [busqueda, setBusqueda] = useState('');
+  const [eliminando, setEliminando] = useState<number | null>(null);
   const cargarProductos = useCallback(async () => {
     setCargando(true);
     setError('');
@@ -21,6 +23,21 @@ const Inventario: React.FC = () => {
     }
   }, []);
   useEffect(() => { void cargarProductos(); }, [cargarProductos]);
+
+  const eliminar = async (producto: Producto) => {
+    if (eliminando !== null || !window.confirm(`¿Deseas eliminar "${producto.nombre}"?`)) return;
+    setEliminando(producto.id);
+    try {
+      await eliminarProducto(producto.id);
+      setProductos((anteriores) => anteriores.filter((item) => item.id !== producto.id));
+    } catch (error: unknown) {
+      console.error('Error eliminando producto:', error);
+      const mensaje = isAxiosError<{ message?: string }>(error) ? error.response?.data?.message : undefined;
+      window.alert(mensaje || 'No fue posible eliminar el producto.');
+    } finally {
+      setEliminando(null);
+    }
+  };
 
   const productosFiltrados = productos.filter((producto) => {
     const texto = busqueda.toLowerCase();
@@ -44,7 +61,7 @@ const Inventario: React.FC = () => {
                 <h2>Control de inventario</h2>
                 <span className="product-count">{productos.length} productos registrados</span>
               </div>
-              <button className="refresh-button" onClick={cargarProductos} disabled={cargando}>Actualizar</button>
+              <button className="refresh-button" onClick={cargarProductos} disabled={cargando || eliminando !== null}>Actualizar</button>
             </div>
             <div className="search-container">
               <input type="text" aria-label="Buscar productos"
@@ -52,12 +69,13 @@ const Inventario: React.FC = () => {
                 value={busqueda} onChange={(event) => setBusqueda(event.target.value)} />
             </div>
             {cargando && <div className="message" role="status">Cargando inventario...</div>}
+            {eliminando !== null && <div className="message" role="status">Eliminando producto...</div>}
             {!cargando && error && <div className="message error" role="alert">{error}</div>}
             {!cargando && !error && productosFiltrados.length > 0 && (
               <div className="table-container">
                 <table aria-label="Catálogo de productos">
                   <thead><tr>
-                    {['Código', 'Producto', 'Categoría', 'Tono', 'Compra', 'Venta'].map((titulo) => <th scope="col" key={titulo}>{titulo}</th>)}
+                    {['Código', 'Producto', 'Categoría', 'Tono', 'Compra', 'Venta', 'Acciones'].map((titulo) => <th scope="col" key={titulo}>{titulo}</th>)}
                   </tr></thead>
                   <tbody>{productosFiltrados.map((producto) => (
                     <tr key={producto.id}>
@@ -69,6 +87,12 @@ const Inventario: React.FC = () => {
                       <td>{producto.tono || '-'}</td>
                       <td>{formatoPrecio(producto.precioCompra)}</td>
                       <td>{formatoPrecio(producto.precioVenta)}</td>
+                      <td><div className="actions">
+                        <button className="table-button delete" aria-label={`Eliminar ${producto.nombre}`}
+                          disabled={eliminando !== null} onClick={() => { void eliminar(producto); }}>
+                          Eliminar
+                        </button>
+                      </div></td>
                     </tr>
                   ))}</tbody>
                 </table>

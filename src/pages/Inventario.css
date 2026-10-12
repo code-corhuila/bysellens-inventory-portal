@@ -1,4 +1,5 @@
 :root {
+  --petalos-danger: #c85f68;
   --petalos-background: #fffafb;
   --petalos-white: #ffffff;
   --petalos-border: #ecd8e1;
@@ -238,4 +239,43 @@
   .search-container {
     padding: 0 20px 20px;
   }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+.table-button {
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid #e8d5de;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #a45f7d;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+.table-button:hover {
+  background: #fff4f8;
+  border-color: #dda6bb;
+}
+.table-button.delete {
+  color: var(--petalos-danger);
+  border-color: #eccfd3;
+}
+.table-button.delete:hover {
+  background: #fff5f5;
+  border-color: #e2aeb3;
+}
+.table-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
 }
