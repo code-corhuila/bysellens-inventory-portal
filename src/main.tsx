@@ -1,4 +1,5 @@
 import './configurar';
+import './accesibilidad.css';
 import React from 'react';
 import { setupIonicReact } from '@ionic/react';
 import Login from '@bysellens/frontend-core/auth/Login';

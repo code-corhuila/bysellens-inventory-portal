@@ -1,5 +1,5 @@
 :root {
-  --petalos-danger: #c85f68;
+  --petalos-danger: #a33d49;
   --petalos-background: #fffafb;
   --petalos-white: #ffffff;
   --petalos-border: #ecd8e1;
@@ -84,7 +84,7 @@
 .product-count {
   display: block;
   margin-top: 5px;
-  color: #9b9097;
+  color: #71656c;
   font-size: 12px;
   line-height: 1.3;
 }
@@ -197,14 +197,14 @@
 
 .message {
   padding: 38px 24px;
-  color: #958a90;
+  color: #71656c;
   text-align: center;
   font-size: 13px;
   line-height: 1.5;
 }
 
 .message.error {
-  color: #c55f68;
+  color: #a33d49;
   background: #fff7f7;
 }
 
@@ -225,7 +225,7 @@
 
 .empty-text {
   margin-top: 7px;
-  color: #9c9298;
+  color: #71656c;
   font-size: 12px;
 }
 
