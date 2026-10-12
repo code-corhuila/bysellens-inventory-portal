@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { imagenProducto } from '@bysellens/frontend-core/configuracion';
 import { isAxiosError } from 'axios';
 import { actualizarProducto, crearProducto, type Producto, type ProductoRequest } from '../services/productoService';
 import './EditarProducto.css';
@@ -22,6 +23,32 @@ const EditarProducto: React.FC<Props> = ({ producto, alGuardar, alCerrar }) => {
   });
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState('');
+  const [archivoImagen, setArchivoImagen] = useState<File | null>(null);
+  const [previewImagen, setPreviewImagen] = useState('');
+  const [imagenNoDisponible, setImagenNoDisponible] = useState(false);
+  useEffect(() => {
+    setImagenNoDisponible(false);
+    if (!archivoImagen) {
+      setPreviewImagen(producto?.imagen ? imagenProducto(producto.imagen) : '');
+      return;
+    }
+    const url = URL.createObjectURL(archivoImagen);
+    setPreviewImagen(url);
+    return () => URL.revokeObjectURL(url);
+  }, [archivoImagen, producto?.imagen]);
+  const seleccionarImagen = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const archivo = event.target.files?.[0];
+    if (!archivo) return;
+    const error = !['image/jpeg', 'image/png', 'image/webp'].includes(archivo.type)
+      ? 'Solo se permiten imágenes JPG, PNG o WEBP.'
+      : archivo.size > 5 * 1024 * 1024 ? 'La imagen no puede superar los 5 MB.' : '';
+    setMensaje(error);
+    if (error) {
+      event.target.value = '';
+      return;
+    }
+    setArchivoImagen(archivo);
+  };
   const cambiarCampo = (campo: keyof ProductoRequest, valor: string | number) => {
     setFormulario((anterior) => ({ ...anterior, [campo]: valor }));
   };
@@ -39,8 +66,8 @@ const EditarProducto: React.FC<Props> = ({ producto, alGuardar, alCerrar }) => {
     setGuardando(true);
     try {
       const actualizado = producto
-        ? await actualizarProducto(producto.id, formulario, null)
-        : await crearProducto(formulario, null);
+        ? await actualizarProducto(producto.id, formulario, archivoImagen)
+        : await crearProducto(formulario, archivoImagen);
       alGuardar(actualizado);
     } catch (error: unknown) {
       const datos = isAxiosError<{ message?: string; mensaje?: string }>(error) ? error.response?.data
@@ -87,6 +114,16 @@ const EditarProducto: React.FC<Props> = ({ producto, alGuardar, alCerrar }) => {
                 <input id={campo} type="number" value={formulario[campo]} onChange={(event) => cambiarCampo(campo, Number(event.target.value))} />
               </div>
             ))}
+          </div>
+          <div className="form-field">
+            <label htmlFor="imagen-producto">Imagen del producto</label>
+            <input id="imagen-producto" type="file" accept="image/jpeg,image/png,image/webp"
+              aria-describedby="imagen-ayuda" onChange={seleccionarImagen} />
+            <p id="imagen-ayuda">JPG, PNG o WEBP. Máximo 5 MB. Selecciona otra imagen para reemplazarla.</p>
+            {previewImagen && !imagenNoDisponible ? <div className="inventario-image-preview">
+              <img src={previewImagen} alt={`Vista previa de ${formulario.nombre || 'producto'}`}
+                onError={() => setImagenNoDisponible(true)} />
+            </div> : <p>{imagenNoDisponible ? 'Imagen no disponible.' : 'Sin imagen seleccionada.'}</p>}
           </div>
         </fieldset>
         {mensaje && <div className="form-error" role="alert">{mensaje}</div>}
