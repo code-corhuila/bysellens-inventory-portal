@@ -35,7 +35,7 @@ it('registra, actualiza contador/listado, limpia búsqueda y persiste usando val
   expect(await screen.findByText('Producto creado correctamente.')).toBeTruthy();
   expect(screen.getByText('Producto nuevo')).toBeTruthy();
   expect(screen.getByText('2 productos registrados')).toBeTruthy();
-  expect(screen.queryByRole('complementary')).toBeNull();
+  expect(screen.queryByRole('dialog')).toBeNull();
   expect(guardar).toHaveBeenCalledWith({
     codigo: 'NUEVO001', nombre: 'Producto nuevo', categoria: 'Maquillaje', tono: 'Coral',
     descripcion: 'Descripción comercial', precioCompra: 100, precioVenta: 150,
@@ -105,5 +105,5 @@ it('bloquea cancelar y registros repetidos mientras espera al servicio', async (
   crear();
   expect(guardar).toHaveBeenCalledTimes(1);
   terminar({ ...(await servicio.obtenerProductoPorId(1)), id: 2, codigo: 'NUEVO001', nombre: 'Producto nuevo' });
-  await waitFor(() => expect(screen.queryByRole('complementary')).toBeNull());
+  await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
 });

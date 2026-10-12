@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { imagenProducto } from '@bysellens/frontend-core/configuracion';
 import { isAxiosError } from 'axios';
 import { actualizarProducto, crearProducto, type Producto, type ProductoRequest } from '../services/productoService';
@@ -12,6 +13,18 @@ interface Props {
 
 // Bloque comercial del formulario original; conserva cantidades y estado recibidos.
 const EditarProducto: React.FC<Props> = ({ producto, alGuardar, alCerrar }) => {
+  const panel = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const activador = document.activeElement;
+    const fondo = document.getElementById('root');
+    const eraInerte = fondo?.inert;
+    if (fondo) fondo.inert = true;
+    panel.current?.querySelector('input')?.focus();
+    return () => {
+      if (fondo) fondo.inert = eraInerte ?? false;
+      if (activador instanceof HTMLElement && activador.isConnected) activador.focus();
+    };
+  }, []);
   const [formulario, setFormulario] = useState<ProductoRequest>(producto ? {
     codigo: producto.codigo, nombre: producto.nombre, descripcion: producto.descripcion || '',
     categoria: producto.categoria || '', tono: producto.tono || '',
@@ -81,9 +94,26 @@ const EditarProducto: React.FC<Props> = ({ producto, alGuardar, alCerrar }) => {
     }
   };
 
-  return <>
-    <div className="inventario-drawer-overlay" />
-    <aside className="inventario-drawer" aria-label={producto ? 'Editar producto' : 'Nuevo producto'}>
+  const manejarTeclado = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      if (!guardando) alCerrar();
+    }
+    if (event.key !== 'Tab') return;
+    const campos = Array.from(panel.current?.querySelectorAll<HTMLElement>('input, select, textarea, button') ?? [])
+      .filter((campo) => !campo.matches(':disabled') && campo.tabIndex >= 0);
+    const destino = event.shiftKey ? campos.at(-1) : campos[0];
+    const limite = event.shiftKey ? campos[0] : campos.at(-1);
+    if (!campos.length || document.activeElement === limite || document.activeElement === panel.current) {
+      event.preventDefault();
+      (destino ?? panel.current)?.focus();
+    }
+  };
+
+  return createPortal(<>
+    <div className="inventario-drawer-overlay" aria-hidden="true" />
+    <aside ref={panel} className="inventario-drawer" role="dialog" aria-modal="true" tabIndex={-1}
+      aria-label={producto ? 'Editar producto' : 'Nuevo producto'} onKeyDown={manejarTeclado}>
       <form className="product-form" noValidate onSubmit={(event) => { event.preventDefault(); void guardarProducto(); }}>
         <h2>{producto ? 'Editar producto' : 'Nuevo producto'}</h2>
         <p>{producto ? 'Modifica la información del producto.' : 'Registra un nuevo producto en el inventario.'}</p>
@@ -134,7 +164,7 @@ const EditarProducto: React.FC<Props> = ({ producto, alGuardar, alCerrar }) => {
         </div>
       </form>
     </aside>
-  </>;
+  </>, document.body);
 };
 
 export default EditarProducto;

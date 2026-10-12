@@ -116,7 +116,7 @@
   border: 1px solid #efc8cd !important;
   border-radius: 10px !important;
   background: #fff4f5 !important;
-  color: #c45f68 !important;
+  color: #a33d49 !important;
   font-size: 12px !important;
   line-height: 1.45 !important;
 }
@@ -150,13 +150,13 @@
   border: 1px solid #e6cbd6 !important;
 }
 .inventario-drawer .primary-button {
-  background: #d45f8c !important;
+  background: #a83d68 !important;
   color: #fff !important;
-  border: 1px solid #d45f8c !important;
+  border: 1px solid #a83d68 !important;
   box-shadow: 0 8px 20px rgba(212,95,140,.16) !important;
 }
 .inventario-drawer .primary-button:hover {
-  background: #cb5684 !important;
+  background: #96345c !important;
 }
 
 .inventario-drawer fieldset {
