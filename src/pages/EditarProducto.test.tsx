@@ -36,7 +36,7 @@ it('guarda información comercial en MOCK y conserva cantidades, estado e imagen
   cambiar('Precio venta', '20000');
   fireEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }));
   expect(await screen.findByText('Labial actualizado')).toBeTruthy();
-  expect(screen.queryByRole('complementary')).toBeNull();
+  expect(screen.queryByRole('dialog')).toBeNull();
   expect(await servicio.obtenerProductoPorId(1)).toMatchObject({
     nombre: 'Labial actualizado', tono: 'Coral', descripcion: 'Nueva descripción', precioVenta: 20000,
     stock: anterior.stock, stockMinimo: anterior.stockMinimo, activo: anterior.activo, imagen: anterior.imagen,
@@ -83,5 +83,5 @@ it('bloquea campos, cancelar y envíos repetidos mientras guarda', async () => {
   fireEvent.click(boton);
   expect(guardar).toHaveBeenCalledTimes(1);
   terminar(producto);
-  await waitFor(() => expect(screen.queryByRole('complementary')).toBeNull());
+  await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
 });

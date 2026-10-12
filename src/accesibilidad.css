@@ -1,0 +1,14 @@
+/* Correcciones locales de contraste del login compartido. */
+.login-page .login-brand p,
+.login-page .login-footer p,
+.login-page .login-input input::placeholder {
+  color: #81576b;
+}
+
+.login-page .login-button {
+  background: #a83d68;
+}
+
+.login-page .login-button:hover {
+  background: #96345c;
+}
