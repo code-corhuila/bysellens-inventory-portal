@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { eliminarProducto, obtenerProductos, type Producto } from '../services/productoService';
 import { isAxiosError } from 'axios';
 import './Inventario.css';
+import EditarProducto from './EditarProducto';
 
 // Consulta y desactivación extraídas de la pantalla original.
 const Inventario: React.FC = () => {
@@ -11,6 +12,7 @@ const Inventario: React.FC = () => {
   const [error, setError] = useState('');
   const [busqueda, setBusqueda] = useState('');
   const [eliminando, setEliminando] = useState<number | null>(null);
+  const [productoEditando, setProductoEditando] = useState<Producto | null>(null);
   const cargarProductos = useCallback(async () => {
     setCargando(true);
     setError('');
@@ -88,6 +90,8 @@ const Inventario: React.FC = () => {
                       <td>{formatoPrecio(producto.precioCompra)}</td>
                       <td>{formatoPrecio(producto.precioVenta)}</td>
                       <td><div className="actions">
+                        <button className="table-button" aria-label={`Editar ${producto.nombre}`}
+                          disabled={eliminando !== null} onClick={() => setProductoEditando(producto)}>Editar</button>
                         <button className="table-button delete" aria-label={`Eliminar ${producto.nombre}`}
                           disabled={eliminando !== null} onClick={() => { void eliminar(producto); }}>
                           Eliminar
@@ -105,6 +109,12 @@ const Inventario: React.FC = () => {
               </div>
             )}
           </div>
+          {productoEditando && <EditarProducto producto={productoEditando}
+            alCerrar={() => setProductoEditando(null)}
+            alGuardar={(actualizado) => {
+              setProductos((anteriores) => anteriores.map((producto) => producto.id === actualizado.id ? actualizado : producto));
+              setProductoEditando(null);
+            }} />}
         </div>
       </IonContent>
     </IonPage>
