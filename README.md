@@ -95,3 +95,16 @@ La integración y aceptación de MOCK para producción siguen pendientes.
 
 Se mantiene la documentación previa del bootstrap y el gobierno de ramas.
 HU/tarea oficial: asociación pendiente, sin inventar identificadores.
+
+## Listado y búsqueda (promoción 3/5)
+
+By_Sellens incorpora el catálogo comercial aprobado en QA PR #14, commit
+`599b4136edb0a0c5674e5e4f5fd3b4712b7a6d65`, sobre los servicios MOCK existentes.
+Esta entrega sustituye la pantalla provisional descrita en las secciones anteriores.
+Muestra código, nombre/descripción, categoría, tono y precios de compra/venta en COP.
+Permite buscar por código, nombre, categoría o tono sin distinguir mayúsculas,
+actualizar el catálogo y mostrar estados de carga, vacío y error con reintento.
+Las pruebas cubren estos estados y conservan la autenticación y los servicios.
+No incorpora acciones de desactivación, edición, creación, imágenes ni ajustes
+finales de accesibilidad; tampoco administra existencias ni valida backend REAL.
+La configuración y dependencias del bootstrap permanecen sin cambios.
