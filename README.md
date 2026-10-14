@@ -108,3 +108,15 @@ Las pruebas cubren estos estados y conservan la autenticación y los servicios.
 No incorpora acciones de desactivación, edición, creación, imágenes ni ajustes
 finales de accesibilidad; tampoco administra existencias ni valida backend REAL.
 La configuración y dependencias del bootstrap permanecen sin cambios.
+
+## Desactivación de productos hacia main
+
+By_Sellens incorpora exclusivamente la desactivación aprobada en QA PR #15,
+commit `ab490bc95d65c76a58bc6595a56486b9c105adbc`.
+La acción Eliminar solicita confirmación y desactiva lógicamente mediante los
+servicios MOCK existentes, actualizando listado y contador sin borrar el registro.
+Cancelar no modifica datos. Se conservan los mensajes de error originales y se
+bloquean acciones repetidas y Actualizar mientras se procesa la operación.
+Las pruebas mantienen la búsqueda y verifican cancelación, persistencia, errores
+y bloqueo. No se incorporan edición, creación, imágenes ni accesibilidad posterior.
+Servicios, dependencias y configuración permanecen sin cambios; backend REAL no validado.
