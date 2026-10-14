@@ -73,3 +73,25 @@ node node_modules/vite/bin/vite.js preview --base=/mfe/inventory/
 
 Esta promoción requiere revisión del CODEOWNER y las aprobaciones pendientes.
 No representa el portal completo ni una autorización para fusionar en `main`.
+
+## Servicios comerciales MOCK (promoción 2/5)
+
+Esta entrega de By_Sellens incorpora exclusivamente los servicios aprobados en
+QA mediante el PR #13, commit `03d0bcd48beec82bdc468f113f0dad56dad13135`.
+`src/services/productoService.ts` y `mock.ts` reutilizan los tipos, semilla sintética
+y persistencia de `@bysellens/frontend-core@1.0.0`, sin nuevas dependencias.
+
+El contrato original permite consultar, registrar, actualizar y desactivar productos
+con imagen opcional. Esas operaciones pertenecen al servicio aprobado; sus pantallas
+comerciales, listado/búsqueda y gestión visual de imágenes no se promocionan aquí.
+Después del login continúa la pantalla provisional del bootstrap.
+
+Se conservan validaciones de precios/código único, persistencia MOCK y pruebas.
+Los campos heredados `stock` y `stockMinimo` se mantienen por compatibilidad;
+la administración de existencias corresponde a Product Portal. El adaptador original
+no impide modificar cantidades en un payload: se conserva esa limitación heredada.
+La prueba del contrato multipart REAL simula el transporte; no valida un backend.
+La integración y aceptación de MOCK para producción siguen pendientes.
+
+Se mantiene la documentación previa del bootstrap y el gobierno de ramas.
+HU/tarea oficial: asociación pendiente, sin inventar identificadores.
