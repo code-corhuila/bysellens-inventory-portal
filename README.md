@@ -120,3 +120,18 @@ bloquean acciones repetidas y Actualizar mientras se procesa la operación.
 Las pruebas mantienen la búsqueda y verifican cancelación, persistencia, errores
 y bloqueo. No se incorporan edición, creación, imágenes ni accesibilidad posterior.
 Servicios, dependencias y configuración permanecen sin cambios; backend REAL no validado.
+
+## Edición de productos hacia main (5/5)
+
+By_Sellens incorpora exclusivamente la edición comercial aprobada en QA PR #16,
+commit `2903efcbd5cf75a32bb5091358752aa03071f086`.
+La acción Editar abre el formulario con los datos existentes y permite modificar
+código, nombre, categoría, tono, descripción y precios con las validaciones originales.
+Guarda mediante los servicios MOCK y actualiza el listado, conservando cantidades,
+estado e imagen. Cancelar no guarda; los errores permiten reintentar y los campos,
+cancelación y envíos repetidos se bloquean mientras se procesa el guardado.
+Se mantienen listado, búsqueda y desactivación, con sus pruebas anteriores.
+No incorpora creación, selección de imágenes ni mejoras finales de accesibilidad.
+La etiqueta 5/5 identifica esta entrega planificada; no implica que main contenga
+el portal completo de QA ni aceptación de MOCK para producción.
+Servicios, dependencias y configuración permanecen sin cambios; backend REAL no validado.
